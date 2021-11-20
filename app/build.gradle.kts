@@ -68,6 +68,11 @@ dependencies {
     implementation("com.google.code.gson:gson:2.8.9")
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.2")
 
+    // Location/Map
+    val playServicesVersion = "18.0.0"
+    implementation("com.google.android.gms:play-services-location:$playServicesVersion")
+    implementation("com.google.android.gms:play-services-maps:$playServicesVersion")
+
     // DI
     implementation("com.google.dagger:hilt-android:2.38.1")
     kapt("com.google.dagger:hilt-android-compiler:2.38.1")
@@ -78,6 +83,7 @@ dependencies {
     val coroutinesVersion = "1.5.2"
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutinesVersion")
 
     // ViewModels
     val lifecycleVersion = "2.4.0"

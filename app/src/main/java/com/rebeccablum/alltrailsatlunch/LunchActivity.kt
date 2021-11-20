@@ -36,16 +36,22 @@ class LunchActivity : ComponentActivity() {
                 ContextCompat.checkSelfPermission(
                     context,
                     Manifest.permission.ACCESS_FINE_LOCATION
-                ) -> viewModel.hasLocationPermission.value = true
+                ) -> {
+                    viewModel.showLocationPermissionPrompt.value = false
+                    viewModel.updateRestaurantsFromUserLocation()
+                }
             }
             MaterialTheme {
                 Box(modifier = Modifier.fillMaxWidth()) {
-                    if (!viewModel.hasLocationPermission.value) {
+                    if (viewModel.showLocationPermissionPrompt.value) {
                         // https://stackoverflow.com/questions/60608101/how-request-permissions-with-jetpack-compose
                         val launcher = rememberLauncherForActivityResult(
                             contract = ActivityResultContracts.RequestPermission()
                         ) { isGranted ->
-                            if (isGranted) viewModel.hasLocationPermission.value = true
+                            if (isGranted) {
+                                viewModel.showLocationPermissionPrompt.value = false
+                                viewModel.updateRestaurantsFromUserLocation()
+                            }
                         }
                         // TODO handle rationale / nav to app settings
                         AlertDialog(
