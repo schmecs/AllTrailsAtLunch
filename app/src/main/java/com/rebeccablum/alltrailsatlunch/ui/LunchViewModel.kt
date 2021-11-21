@@ -1,4 +1,4 @@
-package com.rebeccablum.alltrailsatlunch
+package com.rebeccablum.alltrailsatlunch.ui
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
