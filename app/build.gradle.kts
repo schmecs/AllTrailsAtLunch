@@ -1,10 +1,9 @@
-import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
-
 plugins {
     id("com.android.application")
     id("kotlin-android")
     id("dagger.hilt.android.plugin")
     id("org.jetbrains.kotlin.kapt")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 val composeVersion = "1.1.0-beta03"
@@ -24,19 +23,7 @@ android {
         compose = true
     }
     buildTypes {
-        debug {
-            buildConfigField(
-                "String",
-                "PLACES_API_KEY",
-                gradleLocalProperties(project.rootDir)["places.key"] as String
-            )
-        }
         release {
-            buildConfigField(
-                "String",
-                "PLACES_API_KEY",
-                gradleLocalProperties(project.rootDir)["places.key"] as String
-            )
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

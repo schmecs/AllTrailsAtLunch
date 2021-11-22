@@ -3,9 +3,8 @@ package com.rebeccablum.alltrailsatlunch.data
 import android.annotation.SuppressLint
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
-import com.google.android.gms.tasks.CancellationToken
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.CancellationTokenSource
-import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.asDeferred
 import kotlinx.coroutines.withContext

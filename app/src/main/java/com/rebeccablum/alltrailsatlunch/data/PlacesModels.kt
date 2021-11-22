@@ -2,7 +2,7 @@ package com.rebeccablum.alltrailsatlunch.data
 
 import com.google.gson.annotations.SerializedName
 
-data class GetNearbyRestaurantsResponse(
+data class SearchRestaurantsResponse(
     @SerializedName("results") val results: List<Place>
 )
 
@@ -12,7 +12,10 @@ data class Place(
     @SerializedName("formatted_phone_number") val phoneNumber: String,
     @SerializedName("geometry") val geometry: Geometry,
     @SerializedName("name") val name: String,
-    @SerializedName("photos") val placePhotos: List<PlacePhoto>
+    @SerializedName("photos") val placePhotos: List<PlacePhoto>,
+    @SerializedName("rating") val rating: Double,
+    @SerializedName("user_ratings_total") val numRatings: Int,
+    @SerializedName("price_level") val priceLevel: Int
 )
 
 data class Geometry(
@@ -22,9 +25,7 @@ data class Geometry(
 data class LatLng(
     @SerializedName("lat") val latitude: Double,
     @SerializedName("lng") val longitude: Double
-) {
-    val formattedAsQuery = "$latitude%2C$longitude"
-}
+)
 
 data class PlacePhoto(
     @SerializedName("photo_reference") val photoId: String

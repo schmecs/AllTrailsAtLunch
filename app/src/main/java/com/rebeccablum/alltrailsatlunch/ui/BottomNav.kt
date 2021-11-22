@@ -6,7 +6,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -21,15 +21,25 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 // TODO break up viewmodel (?) which would prob mean a location repository
 @Composable
 fun LunchNavHost(navController: NavHostController, lunchViewModel: LunchViewModel) {
+    val restaurants = lunchViewModel.nearbyRestaurants.collectAsState()
+    val userLocation = lunchViewModel.userLocation.collectAsState(null)
     NavHost(navController = navController, startDestination = "map") {
-        composable("map") { Map() }
-        composable("restaurantList") { RestaurantList(restaurants = lunchViewModel.nearbyRestaurants.collectAsState().value) }
+        composable("map") {
+            RestaurantMap(
+                latLng = userLocation.value,
+                restaurants = restaurants.value,
+                onMapMoved = { lunchViewModel.onMapMoved(it) },
+                onMyLocationButtonClick = { lunchViewModel.updateCurrentLocation() },
+                onMarkerClicked = { }
+            )
+        }
+        composable("restaurantList") { RestaurantList(restaurants = restaurants.value) }
     }
 }
 
 // TODO change title to string resource
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
-    object MapView : Screen("map", "Map", Icons.Filled.Map)
+    object MapView : Screen("map", "Map", Icons.Filled.Place)
     object RestaurantList : Screen("restaurantList", "Restaurants", Icons.Filled.List)
 }
 

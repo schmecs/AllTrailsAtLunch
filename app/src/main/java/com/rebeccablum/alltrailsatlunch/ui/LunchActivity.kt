@@ -8,8 +8,19 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
@@ -32,7 +43,7 @@ class LunchActivity : ComponentActivity() {
                     Manifest.permission.ACCESS_FINE_LOCATION
                 ) -> {
                     viewModel.showLocationPermissionPrompt.value = false
-                    viewModel.updateRestaurantsFromUserLocation()
+                    viewModel.updateCurrentLocation()
                 }
             }
             MaterialTheme {
@@ -47,11 +58,12 @@ class LunchActivity : ComponentActivity() {
                             ) { isGranted ->
                                 if (isGranted) {
                                     viewModel.showLocationPermissionPrompt.value = false
-                                    viewModel.updateRestaurantsFromUserLocation()
+                                    viewModel.updateCurrentLocation()
                                 }
                             }
                             // TODO handle rationale / nav to app settings
                             AlertDialog(
+                                text = { Text("Location is required to use this app.") },
                                 onDismissRequest = { },
                                 buttons = {
                                     Button(
@@ -61,16 +73,28 @@ class LunchActivity : ComponentActivity() {
                             )
                         }
                         Column {
-                            Row(modifier = Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight()) {
-                                Text("Search bar here")
-                            }
-                            LunchNavHost(navController = navController, lunchViewModel = viewModel)
+                            SearchBar(
+                                currentSearch = viewModel.searchText.collectAsState().value,
+                                onSearchTextChanged = { viewModel.onSearchTextChanged(it) })
+                            LunchNavHost(
+                                navController = navController,
+                                lunchViewModel = viewModel
+                            )
                         }
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun SearchBar(currentSearch: String, onSearchTextChanged: (String) -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+    ) {
+        OutlinedTextField(value = currentSearch, onValueChange = { onSearchTextChanged(it) })
     }
 }

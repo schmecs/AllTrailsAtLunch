@@ -1,7 +1,7 @@
 package com.rebeccablum.alltrailsatlunch.models
 
-import com.rebeccablum.alltrailsatlunch.data.GetNearbyRestaurantsResponse
-import com.rebeccablum.alltrailsatlunch.data.LatLng
+import com.google.android.gms.maps.model.LatLng
+import com.rebeccablum.alltrailsatlunch.data.SearchRestaurantsResponse
 
 data class Restaurant(
     val id: String,
@@ -9,17 +9,17 @@ data class Restaurant(
     val address: String? = null,
     val phone: String? = null,
     val location: LatLng,
-    val photoId: String? = null
+    val photoUrl: String? = null
 )
 
-fun GetNearbyRestaurantsResponse.toDomainModel(): List<Restaurant> {
+fun SearchRestaurantsResponse.toDomainModel(): List<Restaurant> {
     return results.map {
         Restaurant(
             it.id,
             it.name,
             it.address,
             it.phoneNumber,
-            it.geometry.location,
+            LatLng(it.geometry.location.latitude, it.geometry.location.longitude),
             it.placePhotos.firstOrNull()?.photoId
         )
     }
