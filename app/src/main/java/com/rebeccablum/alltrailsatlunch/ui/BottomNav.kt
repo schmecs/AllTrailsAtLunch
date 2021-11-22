@@ -40,7 +40,7 @@ fun LunchNavHost(navController: NavHostController, lunchViewModel: LunchViewMode
 // TODO change title to string resource
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
     object MapView : Screen("map", "Map", Icons.Filled.Place)
-    object RestaurantList : Screen("restaurantList", "Restaurants", Icons.Filled.List)
+    object RestaurantList : Screen("restaurantList", "Results", Icons.Filled.List)
 }
 
 val bottomNavItems = listOf(Screen.MapView, Screen.RestaurantList)

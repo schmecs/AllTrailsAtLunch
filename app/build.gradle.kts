@@ -60,6 +60,9 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:$playServicesVersion")
     implementation("com.google.android.gms:play-services-maps:$playServicesVersion")
 
+    // Image loading
+    implementation("io.coil-kt:coil-compose:1.4.0")
+
     // DI
     implementation("com.google.dagger:hilt-android:2.38.1")
     kapt("com.google.dagger:hilt-android-compiler:2.38.1")

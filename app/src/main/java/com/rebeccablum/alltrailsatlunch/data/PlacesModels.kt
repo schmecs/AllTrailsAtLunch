@@ -12,7 +12,7 @@ data class Place(
     @SerializedName("formatted_phone_number") val phoneNumber: String,
     @SerializedName("geometry") val geometry: Geometry,
     @SerializedName("name") val name: String,
-    @SerializedName("photos") val placePhotos: List<PlacePhoto>,
+    @SerializedName("photos") val placePhotos: List<PlacePhoto>?,
     @SerializedName("rating") val rating: Double,
     @SerializedName("user_ratings_total") val numRatings: Int,
     @SerializedName("price_level") val priceLevel: Int

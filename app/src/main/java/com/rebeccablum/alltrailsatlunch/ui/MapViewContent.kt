@@ -36,7 +36,6 @@ fun RestaurantMap(
 ) {
     val googleMapView = rememberMapViewWithLifecycle()
     val context = LocalContext.current
-    val readRestaurantsForCompose = restaurants
     Box(
         modifier = Modifier
             .fillMaxSize()

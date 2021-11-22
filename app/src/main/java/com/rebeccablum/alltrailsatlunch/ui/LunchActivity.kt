@@ -10,16 +10,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -61,15 +54,12 @@ class LunchActivity : ComponentActivity() {
                                     viewModel.updateCurrentLocation()
                                 }
                             }
-                            // TODO handle rationale / nav to app settings
-                            AlertDialog(
-                                text = { Text("Location is required to use this app.") },
-                                onDismissRequest = { },
-                                buttons = {
-                                    Button(
-                                        onClick = { launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION) },
-                                        content = { Text("Set location permissions") })
-                                }
+                            PermissionAlert(
+                                launchPermissionRequest = { launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION) },
+                                goToAppSettings = {
+                                    viewModel.showLocationPermissionPrompt.value = false
+                                },
+                                showRationale = shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)
                             )
                         }
                         Column {
@@ -85,16 +75,5 @@ class LunchActivity : ComponentActivity() {
                 }
             }
         }
-    }
-}
-
-@Composable
-fun SearchBar(currentSearch: String, onSearchTextChanged: (String) -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-    ) {
-        OutlinedTextField(value = currentSearch, onValueChange = { onSearchTextChanged(it) })
     }
 }
