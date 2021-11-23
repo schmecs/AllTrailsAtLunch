@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -48,7 +49,8 @@ fun RestaurantMap(
         Box(
             modifier = Modifier
                 .weight(1f)
-                .padding(bottom = 48.dp)
+                .align(Alignment.CenterHorizontally)
+                .padding(bottom = if (currentRestaurantInfo.value == null) 48.dp else 0.dp)
         ) {
             if (latLng == null) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -84,7 +86,13 @@ fun RestaurantMap(
             }
         }
         currentRestaurantInfo.value?.let {
-            RestaurantItem(restaurant = it)
+            Box(
+                modifier = Modifier
+                    .padding(bottom = 48.dp)
+                    .wrapContentSize()
+            ) {
+                RestaurantItem(restaurant = it)
+            }
         }
     }
 }
