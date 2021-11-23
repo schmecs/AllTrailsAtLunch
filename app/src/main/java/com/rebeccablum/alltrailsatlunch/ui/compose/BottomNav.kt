@@ -1,4 +1,4 @@
-package com.rebeccablum.alltrailsatlunch.ui
+package com.rebeccablum.alltrailsatlunch.ui.compose
 
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem

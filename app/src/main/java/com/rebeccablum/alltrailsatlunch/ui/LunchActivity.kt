@@ -18,6 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.navigation.compose.rememberNavController
+import com.rebeccablum.alltrailsatlunch.ui.compose.LunchBottomNav
+import com.rebeccablum.alltrailsatlunch.ui.compose.LunchNavHost
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
