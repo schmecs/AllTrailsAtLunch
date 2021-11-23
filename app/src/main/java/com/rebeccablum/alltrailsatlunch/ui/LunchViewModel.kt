@@ -32,6 +32,7 @@ class LunchViewModel @Inject constructor(
     val errorMessage = mutableStateOf<String?>(null) // TODO
 
     private var getCurrentLocationJob: Job? = null
+    var currentJob: Job? = null
 
     // TODO use lifecycle scope appropriately here somehow
     init {
@@ -44,6 +45,10 @@ class LunchViewModel @Inject constructor(
         getCurrentLocationJob = viewModelScope.launch {
             userLocation.value = locationService.getCurrentLocation()
         }
+    }
+
+    fun onMapMoving() {
+        currentJob?.cancel()
     }
 
     fun onMapMoved(newCenter: LatLng) {
@@ -67,7 +72,6 @@ class LunchViewModel @Inject constructor(
 
     @OptIn(FlowPreview::class)
     fun subscribeToLocationAndSearchChanges() {
-        var currentJob: Job? = null
         viewModelScope.launch {
             combine(
                 searchText.debounce(500),

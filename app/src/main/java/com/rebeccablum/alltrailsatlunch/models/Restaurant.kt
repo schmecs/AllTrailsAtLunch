@@ -1,6 +1,7 @@
 package com.rebeccablum.alltrailsatlunch.models
 
 import com.google.android.gms.maps.model.LatLng
+import com.rebeccablum.alltrailsatlunch.BuildConfig
 import com.rebeccablum.alltrailsatlunch.data.SearchRestaurantsResponse
 import kotlin.math.roundToInt
 
@@ -24,10 +25,14 @@ fun SearchRestaurantsResponse.toDomainModel(): List<Restaurant> {
             it.address,
             it.phoneNumber,
             LatLng(it.geometry.location.latitude, it.geometry.location.longitude),
-            it.placePhotos?.firstOrNull()?.photoId,
+            it.placePhotos?.firstOrNull()?.photoId?.let(::getPlacePhotoUrl),
             it.rating.roundToInt(),
             it.numRatings,
             it.priceLevel
         )
     }
+}
+
+fun getPlacePhotoUrl(reference: String): String {
+    return "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=$reference&key=${BuildConfig.PLACES_API_KEY}"
 }

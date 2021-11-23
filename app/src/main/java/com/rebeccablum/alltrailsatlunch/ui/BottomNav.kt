@@ -20,7 +20,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 
 // TODO break up viewmodel (?) which would prob mean a location repository
 @Composable
-fun LunchNavHost(navController: NavHostController, lunchViewModel: LunchViewModel) {
+fun LunchNavHost(
+    navController: NavHostController,
+    lunchViewModel: LunchViewModel
+) {
     val restaurants = lunchViewModel.nearbyRestaurants.collectAsState()
     val userLocation = lunchViewModel.userLocation.collectAsState(null)
     NavHost(navController = navController, startDestination = "map") {
@@ -28,9 +31,9 @@ fun LunchNavHost(navController: NavHostController, lunchViewModel: LunchViewMode
             RestaurantMap(
                 latLng = userLocation.value,
                 restaurants = restaurants.value,
-                onMapMoved = { lunchViewModel.onMapMoved(it) },
-                onMyLocationButtonClick = { lunchViewModel.updateCurrentLocation() },
-                onMarkerClicked = { }
+                onMapMoving = { lunchViewModel.onMapMoving() },
+                onMapIdle = { lunchViewModel.onMapMoved(it) },
+                onMyLocationButtonClick = { lunchViewModel.updateCurrentLocation() }
             )
         }
         composable("restaurantList") { RestaurantList(restaurants = restaurants.value) }
