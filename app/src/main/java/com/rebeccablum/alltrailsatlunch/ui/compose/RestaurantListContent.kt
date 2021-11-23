@@ -16,7 +16,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.rebeccablum.alltrailsatlunch.models.Restaurant
 
 @Composable
-fun RestaurantList(restaurants: List<Restaurant>) {
+fun RestaurantList(restaurants: List<Restaurant>, closeKeyboard: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -28,7 +28,7 @@ fun RestaurantList(restaurants: List<Restaurant>) {
                 .wrapContentHeight()
         ) {
             items(restaurants) { restaurant ->
-                RestaurantItem(restaurant = restaurant)
+                RestaurantItem(restaurant = restaurant, onItemClick = closeKeyboard)
             }
         }
     }
@@ -43,9 +43,21 @@ fun RestaurantListPreview() {
                 Restaurant(
                     id = "123",
                     name = "My Restaurant",
-                    location = LatLng(40.0, 40.0)
+                    location = LatLng(40.0, 40.0),
+                    stars = 3,
+                    numRatings = 25,
+                    priceLevel = 2
+                ),
+                Restaurant(
+                    id = "124",
+                    name = "My Other Restaurant",
+                    location = LatLng(40.0, 40.0),
+                    stars = 4,
+                    numRatings = 10,
+                    priceLevel = 3
                 )
-            )
+            ),
+            {}
         )
     }
 }

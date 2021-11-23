@@ -1,5 +1,6 @@
 package com.rebeccablum.alltrailsatlunch.ui.compose
 
+import android.widget.Toast
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
@@ -8,17 +9,25 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.rebeccablum.alltrailsatlunch.ui.LunchViewModel
+import com.rebeccablum.alltrailsatlunch.ui.RestaurantList
+import com.rebeccablum.alltrailsatlunch.ui.RestaurantMap
+import timber.log.Timber
 
-// TODO break up viewmodel (?) which would prob mean a location repository
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun LunchNavHost(
     navController: NavHostController,
@@ -26,17 +35,32 @@ fun LunchNavHost(
 ) {
     val restaurants = lunchViewModel.nearbyRestaurants.collectAsState()
     val userLocation = lunchViewModel.userLocation.collectAsState(null)
+    val errorMessage = lunchViewModel.errorMessage.collectAsState().value
+    val context = LocalContext.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+    errorMessage?.let {
+        LaunchedEffect(errorMessage) {
+            Timber.e(errorMessage)
+            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+        }
+    }
     NavHost(navController = navController, startDestination = "map") {
         composable("map") {
             RestaurantMap(
                 latLng = userLocation.value,
                 restaurants = restaurants.value,
                 onMapMoving = { lunchViewModel.onMapMoving() },
-                onMapIdle = { lunchViewModel.onMapMoved(it) },
-                onMyLocationButtonClick = { lunchViewModel.updateCurrentLocation() }
+                onMapIdle = { lunchViewModel.onMapIdle(it) },
+                onMyLocationButtonClick = { lunchViewModel.updateCurrentLocation() },
+                closeKeyboard = { keyboardController?.hide() }
             )
         }
-        composable("restaurantList") { RestaurantList(restaurants = restaurants.value) }
+        composable("restaurantList") {
+            RestaurantList(
+                restaurants = restaurants.value,
+                closeKeyboard = { keyboardController?.hide() }
+            )
+        }
     }
 }
 

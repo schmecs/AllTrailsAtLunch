@@ -3,6 +3,7 @@ package com.rebeccablum.alltrailsatlunch.ui
 import android.os.Bundle
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.CircularProgressIndicator
@@ -36,24 +37,28 @@ fun RestaurantMap(
     restaurants: List<Restaurant>,
     onMapMoving: () -> Unit,
     onMapIdle: (LatLng) -> Unit,
-    onMyLocationButtonClick: () -> Unit
+    onMyLocationButtonClick: () -> Unit,
+    closeKeyboard: () -> Unit
 ) {
     val currentRestaurantInfo = remember { mutableStateOf<Restaurant?>(null) }
     val googleMapView =
         rememberMapViewWithLifecycle(onMarkerClick = {
+            closeKeyboard()
             val restaurant = restaurants.firstOrNull { r -> r.id == it.tag }
             currentRestaurantInfo.value = restaurant
         })
     val context = LocalContext.current
+
     Column {
         Box(
             modifier = Modifier
                 .weight(1f)
-                .align(Alignment.CenterHorizontally)
                 .padding(bottom = if (currentRestaurantInfo.value == null) 48.dp else 0.dp)
         ) {
             if (latLng == null) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                    CircularProgressIndicator()
+                }
             } else {
                 AndroidView({ googleMapView }) {
                     it.getMapAsync { map ->
@@ -77,7 +82,10 @@ fun RestaurantMap(
                                 MarkerOptions().position(restaurant.location).title(restaurant.name)
                             map.addMarker(markerOptions)?.apply { tag = restaurant.id }
                         }
-                        map.setOnCameraMoveListener(onMapMoving)
+                        map.setOnCameraMoveListener {
+                            onMapMoving()
+                            closeKeyboard()
+                        }
                         map.setOnCameraIdleListener {
                             onMapIdle(map.cameraPosition.target)
                         }
@@ -91,7 +99,8 @@ fun RestaurantMap(
                     .padding(bottom = 48.dp)
                     .wrapContentSize()
             ) {
-                RestaurantItem(restaurant = it)
+                // TODO do we want to do anything on click?
+                RestaurantItem(restaurant = it, onItemClick = {})
             }
         }
     }

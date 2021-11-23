@@ -47,6 +47,7 @@ android {
 dependencies {
     implementation("androidx.core:core-ktx:1.7.0")
     testImplementation("junit:junit:4.13.2")
+    implementation("com.jakewharton.timber:timber:5.0.1")
 
     // Network
     val retrofitVersion = "2.9.0"
@@ -93,4 +94,5 @@ dependencies {
     implementation("androidx.compose.ui:ui-viewbinding:$composeVersion")
     implementation("androidx.compose.ui:ui-tooling:$composeVersion")
     implementation("androidx.navigation:navigation-compose:2.4.0-beta02")
+    implementation("com.google.accompanist:accompanist-permissions:0.21.3-beta")
 }

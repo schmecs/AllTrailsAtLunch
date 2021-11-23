@@ -1,6 +1,7 @@
 package com.rebeccablum.alltrailsatlunch.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,8 +28,10 @@ import com.google.android.gms.maps.model.LatLng
 import com.rebeccablum.alltrailsatlunch.models.Restaurant
 
 @Composable
-fun RestaurantItem(restaurant: Restaurant) {
-    Card(modifier = Modifier.padding(8.dp)) {
+fun RestaurantItem(restaurant: Restaurant, onItemClick: () -> Unit) {
+    Card(modifier = Modifier
+        .padding(8.dp)
+        .clickable { onItemClick() }) {
         Row(modifier = Modifier.padding(16.dp)) {
             val imageUrl = restaurant.photoUrl ?: "https://www.example.com/image.jpg"
             Image(
@@ -99,7 +102,8 @@ fun RestaurantItemPreview() {
                 stars = 3,
                 numRatings = 232,
                 priceLevel = 2
-            )
+            ),
+            {}
         )
     }
 }
