@@ -3,16 +3,18 @@ package com.rebeccablum.alltrailsatlunch.data
 import com.google.android.gms.maps.model.LatLng
 import com.rebeccablum.alltrailsatlunch.models.Restaurant
 import com.rebeccablum.alltrailsatlunch.models.toDomainModel
-import kotlinx.coroutines.Dispatchers
+import com.rebeccablum.alltrailsatlunch.util.DispatcherProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
-// TODO dispatcher provider
 @Singleton
-class LunchRepository @Inject constructor(private val placesService: PlacesService) {
+class LunchRepository @Inject constructor(
+    private val placesService: PlacesService,
+    private val dispatcherProvider: DispatcherProvider
+) {
     private val _nearbyRestaurants = MutableStateFlow<List<Restaurant>>(emptyList())
     val nearbyRestaurants: StateFlow<List<Restaurant>> = _nearbyRestaurants
 
@@ -20,7 +22,7 @@ class LunchRepository @Inject constructor(private val placesService: PlacesServi
         currentLocation: LatLng
     ): Response<Unit> {
         return try {
-            val newData = withContext(Dispatchers.IO) {
+            val newData = withContext(dispatcherProvider.io()) {
                 placesService.searchNearbyRestaurants(
                     location = currentLocation.formattedAsQuery()
                 )
@@ -37,7 +39,7 @@ class LunchRepository @Inject constructor(private val placesService: PlacesServi
         currentLocation: LatLng
     ): Response<Unit> {
         return try {
-            val newData = withContext(Dispatchers.IO) {
+            val newData = withContext(dispatcherProvider.io()) {
                 placesService.searchRestaurantsByText(
                     searchText = searchString,
                     location = currentLocation.formattedAsQuery()

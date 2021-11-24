@@ -46,7 +46,6 @@ android {
 
 dependencies {
     implementation("androidx.core:core-ktx:1.7.0")
-    testImplementation("junit:junit:4.13.2")
     implementation("com.jakewharton.timber:timber:5.0.1")
 
     // Network
@@ -65,8 +64,9 @@ dependencies {
     implementation("io.coil-kt:coil-compose:1.4.0")
 
     // DI
-    implementation("com.google.dagger:hilt-android:2.38.1")
-    kapt("com.google.dagger:hilt-android-compiler:2.38.1")
+    val hiltVersion = "2.38.1"
+    implementation("com.google.dagger:hilt-android:$hiltVersion")
+    kapt("com.google.dagger:hilt-android-compiler:$hiltVersion")
     implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
     kapt("androidx.hilt:hilt-compiler:1.0.0")
 
@@ -95,4 +95,11 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling:$composeVersion")
     implementation("androidx.navigation:navigation-compose:2.4.0-beta02")
     implementation("com.google.accompanist:accompanist-permissions:0.21.3-beta")
+
+    // Testing
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("io.mockk:mockk:1.12.1")
+    testImplementation("com.google.dagger:hilt-android-testing:$hiltVersion")
+    kaptTest("com.google.dagger:hilt-android-compiler:$hiltVersion")
 }

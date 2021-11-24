@@ -26,7 +26,7 @@ fun SearchRestaurantsResponse.toDomainModel(): List<Restaurant> {
             it.phoneNumber,
             LatLng(it.geometry.location.latitude, it.geometry.location.longitude),
             it.placePhotos?.firstOrNull()?.photoId?.let(::getPlacePhotoUrl),
-            it.rating.roundToInt(),
+            it.rating?.roundToInt(),
             it.numRatings,
             it.priceLevel
         )
