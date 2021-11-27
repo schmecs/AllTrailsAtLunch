@@ -23,9 +23,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.rebeccablum.alltrailsatlunch.ui.LunchViewModel
+import com.rebeccablum.alltrailsatlunch.ui.MapViewContent
 import com.rebeccablum.alltrailsatlunch.ui.RestaurantList
-import com.rebeccablum.alltrailsatlunch.ui.RestaurantMap
 import timber.log.Timber
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -34,7 +35,7 @@ fun LunchNavHost(
     lunchViewModel: LunchViewModel
 ) {
     val restaurants = lunchViewModel.nearbyRestaurants.collectAsState()
-    val userLocation = lunchViewModel.userLocation.collectAsState(null)
+    val userLocation = lunchViewModel.selectedLocation.collectAsState(null)
     val errorMessage = lunchViewModel.errorMessage.collectAsState().value
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -46,11 +47,16 @@ fun LunchNavHost(
     }
     NavHost(navController = navController, startDestination = "map") {
         composable("map") {
-            RestaurantMap(
+            MapViewContent(
                 latLng = userLocation.value,
                 restaurants = restaurants.value,
                 onMapMoving = { lunchViewModel.onMapMoving() },
-                onMapIdle = { lunchViewModel.onMapIdle(it) },
+                onMapIdle = { latLng, radius ->
+                    lunchViewModel.onMapIdle(
+                        latLng,
+                        radius.roundToInt()
+                    )
+                },
                 onMyLocationButtonClick = { lunchViewModel.updateCurrentLocation() },
                 closeKeyboard = { keyboardController?.hide() }
             )

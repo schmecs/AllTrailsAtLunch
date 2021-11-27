@@ -27,6 +27,9 @@ class LunchActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel.subscribeToLocationAndSearchChanges()
+        viewModel.updateCurrentLocation()
+
         setContent {
             val navController = rememberNavController()
             MaterialTheme {

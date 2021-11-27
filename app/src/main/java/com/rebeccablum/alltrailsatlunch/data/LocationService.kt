@@ -8,15 +8,12 @@ import com.google.android.gms.tasks.CancellationTokenSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.asDeferred
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class LocationService @Inject constructor(private val fusedLocationProviderClient: FusedLocationProviderClient) {
+class LocationService(private val fusedLocationProviderClient: FusedLocationProviderClient) {
 
     private val cancellationTokenSource = CancellationTokenSource()
 
-    @SuppressLint("MissingPermission")
+    @SuppressLint("MissingPermission") // Permission requested at view layer
     suspend fun getCurrentLocation(): LatLng {
         val currentLocation = withContext(Dispatchers.IO) {
             fusedLocationProviderClient.getCurrentLocation(
@@ -27,8 +24,7 @@ class LocationService @Inject constructor(private val fusedLocationProviderClien
         return LatLng(currentLocation.latitude, currentLocation.longitude)
     }
 
-    // TODO find the right place to call this
-    fun cancelRequestsInFlight() {
+    fun cancelActiveRequest() {
         cancellationTokenSource.cancel()
     }
 }

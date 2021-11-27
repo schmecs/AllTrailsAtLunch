@@ -19,12 +19,14 @@ class LunchRepository @Inject constructor(
     val nearbyRestaurants: StateFlow<List<Restaurant>> = _nearbyRestaurants
 
     suspend fun searchRestaurantsByLocation(
-        currentLocation: LatLng
+        currentLocation: LatLng,
+        currentRadius: Int
     ): Response<Unit> {
         return try {
             val newData = withContext(dispatcherProvider.io()) {
                 placesService.searchNearbyRestaurants(
-                    location = currentLocation.formattedAsQuery()
+                    location = currentLocation.formattedAsQuery(),
+                    radius = currentRadius
                 )
             }
             _nearbyRestaurants.value = newData.toDomainModel()
@@ -36,13 +38,15 @@ class LunchRepository @Inject constructor(
 
     suspend fun searchRestaurantsBySearchTermAndLocation(
         searchString: String,
-        currentLocation: LatLng
+        currentLocation: LatLng,
+        currentRadius: Int
     ): Response<Unit> {
         return try {
             val newData = withContext(dispatcherProvider.io()) {
                 placesService.searchRestaurantsByText(
                     searchText = searchString,
-                    location = currentLocation.formattedAsQuery()
+                    location = currentLocation.formattedAsQuery(),
+                    radius = currentRadius
                 )
             }
             _nearbyRestaurants.value = newData.toDomainModel()

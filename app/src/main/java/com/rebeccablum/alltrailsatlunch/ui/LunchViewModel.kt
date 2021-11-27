@@ -1,11 +1,14 @@
 package com.rebeccablum.alltrailsatlunch.ui
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
+import com.rebeccablum.alltrailsatlunch.R
 import com.rebeccablum.alltrailsatlunch.data.LocationService
 import com.rebeccablum.alltrailsatlunch.data.LunchRepository
 import com.rebeccablum.alltrailsatlunch.data.Response
+import com.rebeccablum.alltrailsatlunch.util.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.FlowPreview
@@ -23,37 +26,42 @@ import javax.inject.Inject
 @HiltViewModel
 class LunchViewModel @Inject constructor(
     private val repository: LunchRepository,
-    private val locationService: LocationService
+    private val locationService: LocationService,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
     val nearbyRestaurants = repository.nearbyRestaurants
 
-    val userLocation = MutableStateFlow<LatLng?>(null)
+    val selectedLocation = MutableStateFlow<LatLng?>(null)
+    private val currentRadius = MutableStateFlow(200)
+    private val mapMoving = MutableStateFlow(false)
     val searchText = MutableStateFlow("")
     val errorMessage = MutableStateFlow<String?>(null)
 
-    private var getCurrentLocationJob: Job? = null
-    private var searchJob: Job? = null
+    @VisibleForTesting
+    var getCurrentLocationJob: Job? = null
 
-    // TODO use lifecycle scope appropriately here somehow
-    init {
-        subscribeToLocationAndSearchChanges()
-        updateCurrentLocation()
-    }
+    @VisibleForTesting
+    var searchJob: Job? = null
 
     // TODO tie to user interaction
     fun updateCurrentLocation() {
         getCurrentLocationJob?.cancel()
         getCurrentLocationJob = viewModelScope.launch {
-            userLocation.value = locationService.getCurrentLocation()
+            selectedLocation.value = locationService.getCurrentLocation()
         }
     }
 
     fun onMapMoving() {
+        mapMoving.value = true
+        getCurrentLocationJob?.cancel()
         searchJob?.cancel()
+        locationService.cancelActiveRequest()
     }
 
-    fun onMapIdle(newCenter: LatLng) {
-        userLocation.value = newCenter
+    fun onMapIdle(newCenter: LatLng, radius: Int) {
+        mapMoving.value = false
+        selectedLocation.value = newCenter
+        currentRadius.value = radius
     }
 
     fun onSearchTextChanged(newText: String) {
@@ -65,16 +73,19 @@ class LunchViewModel @Inject constructor(
         viewModelScope.launch {
             combine(
                 searchText.debounce(500),
-                userLocation.filterNotNull()
-            ) { searchText, latLng ->
+                selectedLocation.filterNotNull(),
+                currentRadius,
+                mapMoving
+            ) { searchText, latLng, radius, mapMoving ->
                 searchJob?.cancel()
-                searchJob = launch {
+                if (!mapMoving) searchJob = launch {
                     val response = if (searchText.isBlank()) {
-                        repository.searchRestaurantsByLocation(latLng)
+                        repository.searchRestaurantsByLocation(latLng, radius)
                     } else {
                         repository.searchRestaurantsBySearchTermAndLocation(
                             searchText,
-                            latLng
+                            latLng,
+                            radius
                         )
                     }
                     if (response is Response.Error) handleError(response.error)
@@ -87,8 +98,11 @@ class LunchViewModel @Inject constructor(
         when (error) {
             is CancellationException -> Timber.d("Update job cancelled")
             is UnknownHostException -> errorMessage.value =
-                "Check your network connection and try again."
-            else -> errorMessage.value = "Something went wrong: $error"
+                resourceProvider.getString(R.string.network_error_message)
+            else -> errorMessage.value = String.format(
+                resourceProvider.getString(R.string.generic_error_message),
+                error.message ?: ""
+            )
         }
     }
 }

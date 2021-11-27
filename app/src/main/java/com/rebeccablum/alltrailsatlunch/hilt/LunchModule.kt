@@ -3,13 +3,17 @@ package com.rebeccablum.alltrailsatlunch.hilt
 import android.content.Context
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.rebeccablum.alltrailsatlunch.data.LocationService
 import com.rebeccablum.alltrailsatlunch.data.PlacesService
 import com.rebeccablum.alltrailsatlunch.util.DefaultDispatcherProvider
 import com.rebeccablum.alltrailsatlunch.util.DispatcherProvider
+import com.rebeccablum.alltrailsatlunch.util.ResourceProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.scopes.ViewModelScoped
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -44,12 +48,29 @@ object LunchModule {
     }
 
     @Provides
+    fun providesDispatcherProvider(): DispatcherProvider {
+        return DefaultDispatcherProvider()
+    }
+}
+
+@Module
+@InstallIn(ViewModelComponent::class)
+object ViewModelModule {
+    @Provides
+    @ViewModelScoped
     fun providesFusedLocationProviderClient(@ApplicationContext context: Context): FusedLocationProviderClient {
         return LocationServices.getFusedLocationProviderClient(context)
     }
 
     @Provides
-    fun providesDispatcherProvider(): DispatcherProvider {
-        return DefaultDispatcherProvider()
+    @ViewModelScoped
+    fun providesLocationService(client: FusedLocationProviderClient): LocationService {
+        return LocationService(client)
+    }
+
+    @Provides
+    @ViewModelScoped
+    fun providesResourceProvider(@ApplicationContext context: Context): ResourceProvider {
+        return ResourceProvider(context)
     }
 }

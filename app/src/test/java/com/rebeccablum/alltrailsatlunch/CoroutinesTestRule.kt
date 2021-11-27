@@ -10,7 +10,7 @@ import org.junit.runner.Description
 
 //https://craigrussell.io/2019/11/unit-testing-coroutine-suspend-functions-using-testcoroutinedispatcher/
 @OptIn(ExperimentalCoroutinesApi::class)
-class CoroutineTestRule(private val testDispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()) :
+class CoroutineTestRule(val testDispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()) :
     TestWatcher() {
 
     override fun starting(description: Description?) {

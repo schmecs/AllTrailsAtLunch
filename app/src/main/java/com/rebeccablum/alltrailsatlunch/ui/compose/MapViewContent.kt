@@ -1,5 +1,6 @@
 package com.rebeccablum.alltrailsatlunch.ui
 
+import android.location.Location
 import android.os.Bundle
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
@@ -28,15 +30,12 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.rebeccablum.alltrailsatlunch.R
 import com.rebeccablum.alltrailsatlunch.models.Restaurant
 
-/**
- * With help from https://johnoreilly.dev/posts/jetpack-compose-google-maps/
- */
 @Composable
-fun RestaurantMap(
+fun MapViewContent(
     latLng: LatLng?,
     restaurants: List<Restaurant>,
     onMapMoving: () -> Unit,
-    onMapIdle: (LatLng) -> Unit,
+    onMapIdle: (LatLng, Float) -> Unit,
     onMyLocationButtonClick: () -> Unit,
     closeKeyboard: () -> Unit
 ) {
@@ -47,8 +46,6 @@ fun RestaurantMap(
             val restaurant = restaurants.firstOrNull { r -> r.id == it.tag }
             currentRestaurantInfo.value = restaurant
         })
-    val context = LocalContext.current
-
     Column {
         Box(
             modifier = Modifier
@@ -60,37 +57,14 @@ fun RestaurantMap(
                     CircularProgressIndicator()
                 }
             } else {
-                AndroidView({ googleMapView }) {
-                    it.getMapAsync { map ->
-                        map.setMapStyle(
-                            MapStyleOptions.loadRawResourceStyle(
-                                context,
-                                R.raw.map_style_json
-                            )
-                        )
-                        map.uiSettings.isTiltGesturesEnabled = false
-                        if (latLng != map.cameraPosition.target) {
-                            if (map.cameraPosition.zoom < 14f) {
-                                map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
-                            } else {
-                                map.moveCamera(CameraUpdateFactory.newLatLng(latLng))
-                            }
-                        }
-                        map.clear()
-                        restaurants.forEach { restaurant ->
-                            val markerOptions =
-                                MarkerOptions().position(restaurant.location).title(restaurant.name)
-                            map.addMarker(markerOptions)?.apply { tag = restaurant.id }
-                        }
-                        map.setOnCameraMoveListener {
-                            onMapMoving()
-                            closeKeyboard()
-                        }
-                        map.setOnCameraIdleListener {
-                            onMapIdle(map.cameraPosition.target)
-                        }
-                    }
-                }
+                ConvertedMapView(
+                    mapView = googleMapView,
+                    latLng = latLng,
+                    restaurants = restaurants,
+                    onMapMoving = onMapMoving,
+                    onMapIdle = onMapIdle,
+                    closeKeyboard = closeKeyboard
+                )
             }
         }
         currentRestaurantInfo.value?.let {
@@ -104,6 +78,64 @@ fun RestaurantMap(
             }
         }
     }
+}
+
+/**
+ * With help from https://johnoreilly.dev/posts/jetpack-compose-google-maps/
+ */
+@Composable
+fun ConvertedMapView(
+    mapView: MapView,
+    latLng: LatLng,
+    restaurants: List<Restaurant>,
+    onMapMoving: () -> Unit,
+    onMapIdle: (LatLng, Float) -> Unit,
+    closeKeyboard: () -> Unit
+) {
+    val context = LocalContext.current
+    AndroidView({ mapView }) {
+        it.getMapAsync { map ->
+            map.setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(
+                    context,
+                    R.raw.map_style_json
+                )
+            )
+            map.uiSettings.isTiltGesturesEnabled = false
+            if (latLng != map.cameraPosition.target) {
+                if (map.cameraPosition.zoom < 14f) {
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
+                } else {
+                    map.moveCamera(CameraUpdateFactory.newLatLng(latLng))
+                }
+            }
+            map.clear()
+            restaurants.forEach { restaurant ->
+                val markerOptions =
+                    MarkerOptions().position(restaurant.location).title(restaurant.name)
+                map.addMarker(markerOptions)?.apply { tag = restaurant.id }
+            }
+            map.setOnCameraMoveListener {
+                onMapMoving()
+                closeKeyboard()
+            }
+            map.setOnCameraIdleListener {
+                onMapIdle(map.cameraPosition.target, map.getRadius())
+            }
+        }
+    }
+}
+
+fun GoogleMap.getRadius(): Float {
+    val results = FloatArray(1)
+    Location.distanceBetween(
+        cameraPosition.target.latitude,
+        cameraPosition.target.longitude,
+        projection.visibleRegion.latLngBounds.northeast.latitude,
+        projection.visibleRegion.latLngBounds.northeast.longitude,
+        results
+    )
+    return results[0]
 }
 
 //https://medium.com/geekculture/google-maps-in-jetpack-compose-android-ae7b1ad84e9
@@ -134,7 +166,7 @@ fun rememberMapViewWithLifecycle(onMarkerClick: (Marker) -> Unit): MapView {
 }
 
 @Composable
-fun rememberMapLifecycleObserver(mapView: com.google.android.gms.maps.MapView): LifecycleEventObserver =
+fun rememberMapLifecycleObserver(mapView: MapView): LifecycleEventObserver =
     remember(mapView) {
         LifecycleEventObserver { _, event ->
             when (event) {
