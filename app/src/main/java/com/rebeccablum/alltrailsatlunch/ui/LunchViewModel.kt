@@ -106,9 +106,3 @@ class LunchViewModel @Inject constructor(
         }
     }
 }
-
-enum class ScreenState {
-    LOADING,
-    DATA,
-    ERROR
-}
