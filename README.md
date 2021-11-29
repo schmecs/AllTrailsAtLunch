@@ -31,6 +31,7 @@ viewModel when requested.
 
 ## Some enhancements I ran out of time for
 
+- Show marker as selected on click
 - "Go to my location" button
 - Composable unit tests
 - Cleaner movement between tabs / preservation of state
