@@ -32,3 +32,6 @@ viewModel when requested.
 - Composable unit tests
 - Cleaner movement between tabs / preservation of state
 - "Favorite" button
+
+https://user-images.githubusercontent.com/5808931/143809169-fe1aa3c7-6513-449e-84ff-2b5fed1049e9.mp4
+
