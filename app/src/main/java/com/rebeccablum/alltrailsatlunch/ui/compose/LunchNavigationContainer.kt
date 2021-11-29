@@ -30,8 +30,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.rebeccablum.alltrailsatlunch.R
 import com.rebeccablum.alltrailsatlunch.ui.LunchViewModel
-import com.rebeccablum.alltrailsatlunch.ui.MapViewContent
-import com.rebeccablum.alltrailsatlunch.ui.RestaurantList
 import timber.log.Timber
 import kotlin.math.roundToInt
 
@@ -65,7 +63,6 @@ fun LunchNavigationContainer(
                             radius.roundToInt()
                         )
                     },
-                    onMyLocationButtonClick = { lunchViewModel.updateCurrentLocation() },
                     closeKeyboard = { keyboardController?.hide() }
                 )
             }

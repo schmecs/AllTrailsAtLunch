@@ -1,4 +1,4 @@
-package com.rebeccablum.alltrailsatlunch.ui
+package com.rebeccablum.alltrailsatlunch.ui.compose
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable

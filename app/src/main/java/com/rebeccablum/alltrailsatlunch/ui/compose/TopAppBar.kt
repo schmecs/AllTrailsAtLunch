@@ -22,7 +22,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.rebeccablum.alltrailsatlunch.R
-import com.rebeccablum.alltrailsatlunch.ui.SearchBar
 
 @Composable
 fun LunchTopAppBar(searchText: String, onSearchTextChanged: (String) -> Unit) {

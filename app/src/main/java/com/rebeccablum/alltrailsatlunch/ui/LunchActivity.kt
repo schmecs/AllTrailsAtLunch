@@ -12,12 +12,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.Scaffold
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.rebeccablum.alltrailsatlunch.ui.compose.LunchBottomNav
 import com.rebeccablum.alltrailsatlunch.ui.compose.LunchNavigationContainer
 import com.rebeccablum.alltrailsatlunch.ui.compose.LunchTopAppBar
+import com.rebeccablum.alltrailsatlunch.ui.compose.PermissionWrapper
 import com.rebeccablum.alltrailsatlunch.ui.compose.style.LunchTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -29,24 +31,26 @@ class LunchActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.subscribeToLocationAndSearchChanges()
-        viewModel.updateCurrentLocation()
 
         setContent {
             val navController = rememberNavController()
             LunchTheme {
-                Scaffold(
-                    topBar = {
-                        LunchTopAppBar(
-                            viewModel.searchText.collectAsState().value
-                        ) { viewModel.onSearchTextChanged(it) }
-                    },
-                    bottomBar = { LunchBottomNav(navController = navController) }
-                ) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        Box(modifier = Modifier.wrapContentSize()) {
-                            PermissionWrapper(
-                                goToAppSettings = { goToAppSettings() },
-                                appContent = {
+                PermissionWrapper(
+                    goToAppSettings = { goToAppSettings() },
+                    appContent = {
+                        LaunchedEffect(Unit) {
+                            viewModel.updateCurrentLocation() // call once after permissions granted
+                        }
+                        Scaffold(
+                            topBar = {
+                                LunchTopAppBar(
+                                    viewModel.searchText.collectAsState().value
+                                ) { viewModel.onSearchTextChanged(it) }
+                            },
+                            bottomBar = { LunchBottomNav(navController = navController) }
+                        ) {
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                Box(modifier = Modifier.wrapContentSize()) {
                                     Column {
                                         LunchNavigationContainer(
                                             navController = navController,
@@ -54,10 +58,10 @@ class LunchActivity : ComponentActivity() {
                                         )
                                     }
                                 }
-                            )
+                            }
                         }
                     }
-                }
+                )
             }
         }
     }

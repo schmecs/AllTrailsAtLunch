@@ -11,7 +11,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.google.android.gms.maps.model.LatLng
 import com.rebeccablum.alltrailsatlunch.models.Restaurant
-import com.rebeccablum.alltrailsatlunch.ui.RestaurantItem
 import com.rebeccablum.alltrailsatlunch.ui.compose.style.LunchTheme
 
 @Composable

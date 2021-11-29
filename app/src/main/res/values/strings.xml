@@ -7,4 +7,6 @@
     <string name="app_title_2">at Lunch</string>
     <string name="map_nav_item">Map</string>
     <string name="results_nav_item">Results</string>
+    <string name="permission_prompt">Please allow access to your location so we can find you some food.</string>
+    <string name="permission_prompt_button">Let\'s go</string>
 </resources>

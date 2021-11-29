@@ -1,4 +1,4 @@
-package com.rebeccablum.alltrailsatlunch.ui
+package com.rebeccablum.alltrailsatlunch.ui.compose
 
 import android.location.Location
 import android.os.Bundle
@@ -36,7 +36,6 @@ fun MapViewContent(
     restaurants: List<Restaurant>,
     onMapMoving: () -> Unit,
     onMapIdle: (LatLng, Float) -> Unit,
-    onMyLocationButtonClick: () -> Unit,
     closeKeyboard: () -> Unit
 ) {
     val currentRestaurantInfo = remember { mutableStateOf<Restaurant?>(null) }
