@@ -9,12 +9,15 @@ viewModel when requested.
 
 ## Key Libraries
 
+- Jetpack Compose for UI
+- Kotlin coroutines for reactive/async
 - Google Maps for map view
 - GMS location services for device location
 - Jetpack Compose Accompanist Permissions for location permission prompt
 - Retrofit for network calls
 - Dagger Hilt for DI
 - Coil for image loading
+- Mockk for unit testing
 
 ## Limitations
 
@@ -31,7 +34,8 @@ viewModel when requested.
 - "Go to my location" button
 - Composable unit tests
 - Cleaner movement between tabs / preservation of state
-- "Favorite" button
+- "Favorite" button (using Room & an indexed column of favorited Place IDs)
+- Query place details & open browser to website on item click
 
 https://user-images.githubusercontent.com/5808931/143809169-fe1aa3c7-6513-449e-84ff-2b5fed1049e9.mp4
 
