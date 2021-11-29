@@ -2,4 +2,9 @@
     <string name="app_name">AllTrails at Lunch</string>
     <string name="network_error_message">Check your network connection and try again.</string>
     <string name="generic_error_message">Something went wrong: %s</string>
+    <string name="search_hint">Search for a restaurant</string>
+    <string name="app_title_1">AllTrails </string>
+    <string name="app_title_2">at Lunch</string>
+    <string name="map_nav_item">Map</string>
+    <string name="results_nav_item">Results</string>
 </resources>

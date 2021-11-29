@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.google.android.gms.maps.model.LatLng
 import com.rebeccablum.alltrailsatlunch.models.Restaurant
+import com.rebeccablum.alltrailsatlunch.ui.compose.style.LunchTheme
 
 @Composable
 fun RestaurantItem(restaurant: Restaurant, onItemClick: () -> Unit) {
@@ -43,7 +44,7 @@ fun RestaurantItem(restaurant: Restaurant, onItemClick: () -> Unit) {
             // Image if url available or generic icon
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .wrapContentSize()
                     .weight(.35f)
             ) {
                 if (restaurant.photoUrl != null) {
@@ -80,7 +81,7 @@ fun RestaurantDetails(restaurant: Restaurant) {
             .wrapContentHeight()
             .padding(8.dp)
     ) {
-        Text(restaurant.name)
+        Text(restaurant.name, style = MaterialTheme.typography.h6)
         restaurant.stars?.let {
             StarRow(numStars = it, numRatings = restaurant.numRatings ?: 0)
         }
@@ -101,8 +102,7 @@ fun ImageLoader(imageUrl: String) {
         painter = rememberImagePainter(imageUrl),
         contentDescription = null,
         modifier = Modifier
-            .size(128.dp)
-            .padding(8.dp),
+            .size(112.dp),
         contentScale = ContentScale.Crop
     )
 }
@@ -117,7 +117,7 @@ fun StarRow(numStars: Int, numRatings: Int) {
                         Icons.Filled.Star,
                         null,
                         modifier = Modifier.padding(2.dp),
-                        tint = Color.Green // TODO
+                        tint = MaterialTheme.colors.primaryVariant
                     )
                 }
                 Icon(
@@ -140,7 +140,7 @@ fun StarRow(numStars: Int, numRatings: Int) {
 @Preview
 @Composable
 fun RestaurantItemPreview() {
-    MaterialTheme {
+    LunchTheme {
         RestaurantItem(
             restaurant = Restaurant(
                 "1",

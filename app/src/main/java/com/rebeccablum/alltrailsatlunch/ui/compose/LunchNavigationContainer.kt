@@ -1,6 +1,8 @@
 package com.rebeccablum.alltrailsatlunch.ui.compose
 
 import android.widget.Toast
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
@@ -12,16 +14,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.rebeccablum.alltrailsatlunch.R
 import com.rebeccablum.alltrailsatlunch.ui.LunchViewModel
 import com.rebeccablum.alltrailsatlunch.ui.MapViewContent
 import com.rebeccablum.alltrailsatlunch.ui.RestaurantList
@@ -30,7 +37,7 @@ import kotlin.math.roundToInt
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun LunchNavHost(
+fun LunchNavigationContainer(
     navController: NavHostController,
     lunchViewModel: LunchViewModel
 ) {
@@ -70,10 +77,9 @@ fun LunchNavHost(
     }
 }
 
-// TODO change title to string resource
-sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
-    object MapView : Screen("map", "Map", Icons.Filled.Place)
-    object RestaurantList : Screen("restaurantList", "Results", Icons.Filled.List)
+sealed class Screen(val route: String, val titleRes: Int, val icon: ImageVector) {
+    object MapView : Screen("map", R.string.map_nav_item, Icons.Filled.Place)
+    object RestaurantList : Screen("restaurantList", R.string.results_nav_item, Icons.Filled.List)
 }
 
 val bottomNavItems = listOf(Screen.MapView, Screen.RestaurantList)
@@ -81,13 +87,16 @@ val bottomNavItems = listOf(Screen.MapView, Screen.RestaurantList)
 //https://developer.android.com/jetpack/compose/navigation#bottom-nav
 @Composable
 fun LunchBottomNav(navController: NavHostController) {
-    BottomNavigation {
+    BottomNavigation(modifier = Modifier.wrapContentHeight()) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
         bottomNavItems.forEach { screen ->
             BottomNavigationItem(
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .align(Alignment.CenterVertically),
                 icon = { Icon(screen.icon, contentDescription = null) },
-                label = { Text(screen.title) },
+                label = { Text(text = stringResource(id = screen.titleRes)) },
                 selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                 onClick = {
                     navController.navigate(screen.route) {

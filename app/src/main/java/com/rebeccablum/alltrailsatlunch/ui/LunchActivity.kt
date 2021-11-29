@@ -11,13 +11,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.rebeccablum.alltrailsatlunch.ui.compose.LunchBottomNav
-import com.rebeccablum.alltrailsatlunch.ui.compose.LunchNavHost
+import com.rebeccablum.alltrailsatlunch.ui.compose.LunchNavigationContainer
+import com.rebeccablum.alltrailsatlunch.ui.compose.LunchTopAppBar
+import com.rebeccablum.alltrailsatlunch.ui.compose.style.LunchTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -32,9 +33,13 @@ class LunchActivity : ComponentActivity() {
 
         setContent {
             val navController = rememberNavController()
-            MaterialTheme {
+            LunchTheme {
                 Scaffold(
-                    topBar = {},
+                    topBar = {
+                        LunchTopAppBar(
+                            viewModel.searchText.collectAsState().value
+                        ) { viewModel.onSearchTextChanged(it) }
+                    },
                     bottomBar = { LunchBottomNav(navController = navController) }
                 ) {
                     Box(modifier = Modifier.fillMaxSize()) {
@@ -43,10 +48,7 @@ class LunchActivity : ComponentActivity() {
                                 goToAppSettings = { goToAppSettings() },
                                 appContent = {
                                     Column {
-                                        SearchBar(
-                                            currentSearch = viewModel.searchText.collectAsState().value,
-                                            onSearchTextChanged = { viewModel.onSearchTextChanged(it) })
-                                        LunchNavHost(
+                                        LunchNavigationContainer(
                                             navController = navController,
                                             lunchViewModel = viewModel
                                         )
