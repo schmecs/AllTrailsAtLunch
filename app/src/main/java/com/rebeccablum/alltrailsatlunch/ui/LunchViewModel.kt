@@ -1,6 +1,5 @@
 package com.rebeccablum.alltrailsatlunch.ui
 
-import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
@@ -8,12 +7,14 @@ import com.rebeccablum.alltrailsatlunch.R
 import com.rebeccablum.alltrailsatlunch.data.LocationService
 import com.rebeccablum.alltrailsatlunch.data.LunchRepository
 import com.rebeccablum.alltrailsatlunch.data.Response
+import com.rebeccablum.alltrailsatlunch.models.Restaurant
 import com.rebeccablum.alltrailsatlunch.util.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
@@ -29,7 +30,8 @@ class LunchViewModel @Inject constructor(
     private val locationService: LocationService,
     private val resourceProvider: ResourceProvider
 ) : ViewModel() {
-    val nearbyRestaurants = repository.nearbyRestaurants
+    private val _nearbyRestaurants = MutableStateFlow<List<Restaurant>>(emptyList())
+    val nearbyRestaurants: StateFlow<List<Restaurant>> = _nearbyRestaurants
 
     val selectedLocation = MutableStateFlow<LatLng?>(null)
     private val currentRadius = MutableStateFlow(200)
@@ -38,13 +40,9 @@ class LunchViewModel @Inject constructor(
     val searchText = MutableStateFlow("")
     val errorMessage = MutableStateFlow<String?>(null)
 
-    @VisibleForTesting
-    var getCurrentLocationJob: Job? = null
+    private var getCurrentLocationJob: Job? = null
+    private var searchJob: Job? = null
 
-    @VisibleForTesting
-    var searchJob: Job? = null
-
-    // TODO tie to user interaction
     fun updateCurrentLocation() {
         getCurrentLocationJob?.cancel()
         getCurrentLocationJob = viewModelScope.launch {
@@ -90,7 +88,10 @@ class LunchViewModel @Inject constructor(
                             radius
                         )
                     }
-                    if (response is Response.Error) handleError(response.error)
+                    when (response) {
+                        is Response.Success -> _nearbyRestaurants.value = response.value
+                        is Response.Error -> handleError(response.error)
+                    }
                 }
                 searchJob?.join()
                 updatingSearch.value = false

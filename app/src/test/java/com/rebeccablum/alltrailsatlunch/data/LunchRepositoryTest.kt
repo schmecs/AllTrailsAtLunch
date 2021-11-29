@@ -41,9 +41,8 @@ class LunchRepositoryTest {
         } returns RESTAURANT_RESPONSE
         runBlockingTest {
             val response = subject.searchRestaurantsByLocation(LAT_LNG_1, 200)
-            assert(response is Response.Success)
+            assert((response as Response.Success).value == RESTAURANT_RESPONSE.toDomainModel())
         }
-        assert(subject.nearbyRestaurants.value == RESTAURANT_RESPONSE.toDomainModel())
     }
 
     @Test
@@ -58,7 +57,6 @@ class LunchRepositoryTest {
             val response = subject.searchRestaurantsByLocation(LAT_LNG_1, 200)
             assert(response is Response.Error)
         }
-        assert(subject.nearbyRestaurants.value.isNullOrEmpty())
     }
 
     @Test
@@ -71,9 +69,10 @@ class LunchRepositoryTest {
             )
         } returns RESTAURANT_RESPONSE
         runBlockingTest {
-            subject.searchRestaurantsBySearchTermAndLocation(SEARCH_TEXT, LAT_LNG_1, 200)
+            val response =
+                subject.searchRestaurantsBySearchTermAndLocation(SEARCH_TEXT, LAT_LNG_1, 200)
+            assert((response as Response.Success).value == RESTAURANT_RESPONSE.toDomainModel())
         }
-        assert(subject.nearbyRestaurants.value == RESTAURANT_RESPONSE.toDomainModel())
     }
 
     @Test
@@ -91,6 +90,5 @@ class LunchRepositoryTest {
                 subject.searchRestaurantsBySearchTermAndLocation(searchTerm, LAT_LNG_1, 200)
             assert(response is Response.Error)
         }
-        assert(subject.nearbyRestaurants.value.isNullOrEmpty())
     }
 }

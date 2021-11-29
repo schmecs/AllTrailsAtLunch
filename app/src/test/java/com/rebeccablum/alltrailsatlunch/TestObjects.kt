@@ -14,14 +14,14 @@ val LAT_LNG_2 = LatLng(41.1235, 73.1235)
 val PLACE_1 = Place(
     "1", "123 Sesame Street", "800-555-5555", Geometry(
         com.rebeccablum.alltrailsatlunch.data.LatLng(LAT_LNG_1.latitude, LAT_LNG_1.longitude)
-    ), "Place 1"
+    ), "Mike's"
 )
 val PLACE_2 = Place(
     "2", "14 Elm Street", "123-456-7890", Geometry(
         com.rebeccablum.alltrailsatlunch.data.LatLng(
             LAT_LNG_2.latitude, LAT_LNG_2.longitude
         )
-    ), "Place 2"
+    ), "Anne's"
 )
 
 val RESTAURANT_1 = Restaurant("1", "Mike's", location = LAT_LNG_1)

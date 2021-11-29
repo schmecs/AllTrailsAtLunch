@@ -11,7 +11,6 @@ import com.rebeccablum.alltrailsatlunch.SEARCH_TEXT
 import com.rebeccablum.alltrailsatlunch.data.LocationService
 import com.rebeccablum.alltrailsatlunch.data.LunchRepository
 import com.rebeccablum.alltrailsatlunch.data.Response
-import com.rebeccablum.alltrailsatlunch.models.Restaurant
 import com.rebeccablum.alltrailsatlunch.util.ResourceProvider
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -19,7 +18,6 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -29,10 +27,7 @@ import java.net.UnknownHostException
 class LunchViewModelTest {
 
     private lateinit var subject: LunchViewModel
-    private val restaurantFlow = MutableStateFlow<List<Restaurant>>(emptyList())
-    private val lunchRepository = mockk<LunchRepository>(relaxed = true).apply {
-        coEvery { nearbyRestaurants } returns restaurantFlow
-    }
+    private val lunchRepository = mockk<LunchRepository>(relaxed = true)
     private val locationService = mockk<LocationService>(relaxed = true)
     private val resourceProvider = mockk<ResourceProvider>().apply {
         every { getString(R.string.network_error_message) } returns NETWORK_ERROR
@@ -109,20 +104,37 @@ class LunchViewModelTest {
     }
 
     @Test
-    fun `given repository returns success no action is taken`() {
+    fun `given repository returns success from location restaurants are updated`() {
         subject.subscribeToLocationAndSearchChanges()
         coEvery {
             lunchRepository.searchRestaurantsByLocation(
                 LAT_LNG_1,
                 200
             )
-        } returns Response.Success(Unit)
+        } returns Response.Success(listOf(RESTAURANT_1, RESTAURANT_2))
+
+        subject.selectedLocation.value = LAT_LNG_1
+        coroutinesRule.testDispatcher.advanceTimeBy(500)
+
+        assert(subject.nearbyRestaurants.value == listOf(RESTAURANT_1, RESTAURANT_2))
+    }
+
+    @Test
+    fun `given repository returns success with search text restaurants are updated`() {
+        subject.subscribeToLocationAndSearchChanges()
+        coEvery {
+            lunchRepository.searchRestaurantsBySearchTermAndLocation(
+                SEARCH_TEXT,
+                LAT_LNG_1,
+                200
+            )
+        } returns Response.Success(listOf(RESTAURANT_1, RESTAURANT_2))
 
         subject.selectedLocation.value = LAT_LNG_1
         subject.searchText.value = SEARCH_TEXT
         coroutinesRule.testDispatcher.advanceTimeBy(500)
 
-        assert(subject.errorMessage.value.isNullOrBlank())
+        assert(subject.nearbyRestaurants.value == listOf(RESTAURANT_1, RESTAURANT_2))
     }
 
     @Test
@@ -139,13 +151,6 @@ class LunchViewModelTest {
         coroutinesRule.testDispatcher.advanceTimeBy(500)
 
         assert(subject.errorMessage.value == NETWORK_ERROR)
-    }
-
-    @Test
-    fun `given repository updates restaurants, viewmodel updates flow`() {
-        assert(subject.nearbyRestaurants.value.isEmpty())
-        restaurantFlow.value = listOf(RESTAURANT_1, RESTAURANT_2)
-        assert(subject.nearbyRestaurants.value == listOf(RESTAURANT_1, RESTAURANT_2))
     }
 
     @Test
