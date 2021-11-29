@@ -34,6 +34,7 @@ class LunchViewModel @Inject constructor(
     val selectedLocation = MutableStateFlow<LatLng?>(null)
     private val currentRadius = MutableStateFlow(200)
     private val mapMoving = MutableStateFlow(false)
+    val updatingSearch = MutableStateFlow(false)
     val searchText = MutableStateFlow("")
     val errorMessage = MutableStateFlow<String?>(null)
 
@@ -79,6 +80,7 @@ class LunchViewModel @Inject constructor(
             ) { searchText, latLng, radius, mapMoving ->
                 searchJob?.cancel()
                 if (!mapMoving) searchJob = launch {
+                    updatingSearch.value = true
                     val response = if (searchText.isBlank()) {
                         repository.searchRestaurantsByLocation(latLng, radius)
                     } else {
@@ -90,6 +92,8 @@ class LunchViewModel @Inject constructor(
                     }
                     if (response is Response.Error) handleError(response.error)
                 }
+                searchJob?.join()
+                updatingSearch.value = false
             }.collect()
         }
     }

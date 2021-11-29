@@ -54,25 +54,29 @@ fun LunchNavigationContainer(
     }
     NavHost(navController = navController, startDestination = "map") {
         composable("map") {
-            MapViewContent(
-                latLng = userLocation.value,
-                restaurants = restaurants.value,
-                onMapMoving = { lunchViewModel.onMapMoving() },
-                onMapIdle = { latLng, radius ->
-                    lunchViewModel.onMapIdle(
-                        latLng,
-                        radius.roundToInt()
-                    )
-                },
-                onMyLocationButtonClick = { lunchViewModel.updateCurrentLocation() },
-                closeKeyboard = { keyboardController?.hide() }
-            )
+            LoadingLayer(isLoading = lunchViewModel.updatingSearch.collectAsState().value) {
+                MapViewContent(
+                    latLng = userLocation.value,
+                    restaurants = restaurants.value,
+                    onMapMoving = { lunchViewModel.onMapMoving() },
+                    onMapIdle = { latLng, radius ->
+                        lunchViewModel.onMapIdle(
+                            latLng,
+                            radius.roundToInt()
+                        )
+                    },
+                    onMyLocationButtonClick = { lunchViewModel.updateCurrentLocation() },
+                    closeKeyboard = { keyboardController?.hide() }
+                )
+            }
         }
         composable("restaurantList") {
-            RestaurantList(
-                restaurants = restaurants.value,
-                closeKeyboard = { keyboardController?.hide() }
-            )
+            LoadingLayer(isLoading = lunchViewModel.updatingSearch.collectAsState().value) {
+                RestaurantList(
+                    restaurants = restaurants.value,
+                    closeKeyboard = { keyboardController?.hide() }
+                )
+            }
         }
     }
 }
