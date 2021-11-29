@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -51,8 +50,13 @@ fun PermissionWrapper(
             }
         },
         permissionNotAvailableContent = {
-            Column(modifier = Modifier.wrapContentSize()) {
-                Text("Location access is denied. Please grant location access in settings to use this app.")
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colors.surface)
+                    .padding(48.dp), horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(stringResource(R.string.permissions_rationale))
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(onClick = goToAppSettings) {
                     Text("Open settings")
